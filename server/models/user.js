@@ -1,0 +1,115 @@
+import bcrypt from "bcrypt";
+import mongoose from "mongoose";
+import jwt from "jsonwebtoken";
+import crypto from "crypto";
+import dotenv from "dotenv";
+import { kMaxLength } from "buffer";
+import { match } from "assert";
+
+const userSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: [true, "Name is required."],
+      trim: true,
+      MaxLength: [50, " Name cannot exceed 30 charactes."],
+    },
+    email: {
+      type: String,
+      required: [true, "Email is required."],
+      unique: true,
+      lowercase: true,
+      match: [
+        /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+        "Please fill a valid email address",
+      ],
+    },
+    password: {
+      type: String,
+      required: [true, "Password is required."],
+      select: false,
+      minLength: [8, "Password must be atleast 8 characters long."],
+    },
+    role: {
+      type: String,
+      default: "Student",
+      enum: ["Student", "Teacher", "Admin"],
+    },
+    resetPasswordToken: String,
+    resetPasswordExpire: Date,
+
+    department: {
+      type: String,
+      trim: true,
+      default: null,
+    },
+    experties: {
+      type: [String],
+      default: [],
+    },
+    maxStudents: {
+      type: Number,
+      default: 10,
+      min: [1, "Minimum 1 student is required"],
+    },
+    assignedStudents: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    supervisor: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
+    projects: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Project",
+      default: null,
+    },
+  },
+  {
+    timestamps: true,
+  },
+);
+
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) {
+    // next();
+    return;
+  }
+  this.password = await bcrypt.hash(this.password, 10);
+});
+
+userSchema.methods.generateToken = function (params) {
+  return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRE,
+  });
+};
+
+userSchema.methods.comparePassword = async function (enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password);
+};
+
+// Sabse important baat pehle samjho:
+
+// ⚠️ Forgot password me JWT login token use nahi hota.
+// Yahan alag temporary reset token use hota hai.
+userSchema.methods.getResetPasswordToken = function () {
+  console.log("TOKEN FUNCTION START");
+
+  const resetToken = crypto.randomBytes(20).toString("hex");
+  console.log(resetToken);
+  this.resetPasswordToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+  this.resetPasswordExpire = Date.now() + 15 * 60 * 1000;
+
+  console.log("TOKEN FUNCTION END");
+  console.log(resetToken);
+  return resetToken;
+};
+
+export const User = mongoose.model("User", userSchema);
