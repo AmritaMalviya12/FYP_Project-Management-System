@@ -29,15 +29,15 @@ export const getUserById = async (id) => {
   );
 };
 
-// getting all the users including bith Teachers and Students that are created or made or entered by the Admin.
+// getting all the users including both Teachers and Students that are created or made or entered by the Admin.
 export const getAllUsers = async () => {
     // Here Admin is not included in the lists of all the users fetched as the Admin is using the function by the same.
-  const query = {role : {$ne: "Admin"}};
+  const query = {role : {$ne: "Admin"}}; //ne -- not include
   const users = await User.find(query).select(
     "-password -resetPasswordToken -resetPasswordExpire",
-  ).sort({createdAt: -1});
+  ).sort({createdAt: -1}); // latest user on top
 
-  const total = await User.countDocuments(query);
+  //const total = await User.countDocuments(query);
 
   return { users };
 };

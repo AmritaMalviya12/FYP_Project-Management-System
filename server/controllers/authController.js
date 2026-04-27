@@ -1,7 +1,7 @@
 import { asyncHandler } from "../middlewares/asyncHandler.js";
 import ErrorHandler from "../middlewares/error.js";
 import { User } from "../models/user.js";
-import { sendEmail } from "../services/emailService.js";
+import { sendEmail } from "../services/emailServices.js";
 import { generateForgotPasswordEmailTemplate } from "../utils/emailTemplates.js";
 import { generateToken } from "../utils/generateToken.js";
 import crypto from "crypto";
@@ -32,8 +32,8 @@ export const login = asyncHandler(async(req,res,next) => {
     if(!user){
         return next(new ErrorHandler("Invalid email,password or role"));
     }
-    const isPasswordMAtched = await user.comparePassword(password);
-    if(!isPasswordMAtched){
+    const isPasswordMatched = await user.comparePassword(password);
+    if(!isPasswordMatched){
         return next(new ErrorHandler("Invalid email, password or role.", 400));
     };
     generateToken(user, 200, "Logged in successfully", res)
@@ -103,7 +103,7 @@ export const forgotPassword = asyncHandler(async(req,res,next) => {
 
 // if user wants to update or reset the password
 export const resetPassword = asyncHandler(async(req,res,next) => {
-    const {token} = req.params;
+    const {token} = req.params; //url me likhe token ki value hai
     const resetPasswordToken = crypto.createHash("sha256").update(token).digest("hex");
 
     const user = await User.findOne({

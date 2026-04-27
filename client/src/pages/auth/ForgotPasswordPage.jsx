@@ -115,7 +115,6 @@ const ForgotPasswordPage = () => {
                 </div>
               )}
 
-          
 
               {/* email addrress */}
               <div>

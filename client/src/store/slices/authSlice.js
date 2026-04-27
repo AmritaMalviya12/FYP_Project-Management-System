@@ -3,7 +3,7 @@ import { axiosInstance } from "../../lib/axios";
 import { toast } from "react-toastify";
 
 
-export const login = createAsyncThunk("login", async (data, thunkAPI) => {
+export const login = createAsyncThunk("login", async (data, thunkAPI) => { // to track state pending, fulfill, reject
   try {
     const res = await axiosInstance.post("/auth/login", data,
       {headers: { "Content-Type": "application/json"},}

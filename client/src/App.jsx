@@ -34,6 +34,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer } from "react-toastify";
 import { Loader } from "lucide-react";
 import { getUser } from "./store/slices/authSlice";
+import { getAllUsers } from "./store/slices/adminSlice";
 
 const App = () => {
 
@@ -44,7 +45,12 @@ const App = () => {
     dispatch(getUser());
   }, [dispatch]); 
 
-  const protectedRoute = ({ children, allowedRoles }) => {
+  useEffect(() => {
+    if (authUser?.role === "Admin") {
+      dispatch(getAllUsers())
+    }
+  }, [authUser])
+  const ProtectedRoute = ({ children, allowedRoles }) => { //make route accessible based on their role
     if(!authUser){
       return <Navigate to="/login" replace/>
     }
@@ -76,15 +82,15 @@ const App = () => {
         {/* Auth Routes */}
         <Route path="/login" element={<LoginPage/>}/>
         <Route path="/forgot-password" element={<ForgotPasswordPage/>}/>
-        <Route path="reset-password" element={<ResetPasswordPage/>}/>
+        <Route path="/reset-password" element={<ResetPasswordPage/>}/>
 
          {/* Admin Routes */}
          <Route
           path="/admin"
           element={
-            <protectedRoute allowedRoles =  {["Admin"]}>
-              <DashboardLayout></DashboardLayout>
-            </protectedRoute>
+            <ProtectedRoute allowedRoles =  {["Admin"]}>
+              <DashboardLayout userRole={"Admin"}></DashboardLayout>
+            </ProtectedRoute>
           }
          >
           {/* this route index r=denotes the home page route that forward slash only one */}
@@ -96,7 +102,26 @@ const App = () => {
           <Route path = "projects" element={<ProjectsPage/>}/>
 
          </Route>
+          {/* Student Route */}
+          <Route
+          path="/student"
+          element={
+            <ProtectedRoute allowedRoles =  {["Student"]}>
+              <DashboardLayout userRole={"Student"}></DashboardLayout>
+            </ProtectedRoute>
+          }
+         >
+          {/* this route index r=denotes the home page route that forward slash only one */}
+          <Route index element= {<StudentDashboard/>} /> 
+          <Route path = "submit-proposal" element={<SubmitProposal/>}/>
+          <Route path = "upload-files" element={<UploadFiles/>}/>
+          <Route path = "supervisor" element={<SupervisorPage/>}/>
+          <Route path = "feedback" element={<FeedbackPage/>}/>
+          <Route path = "notifications" element={<NotificationsPage/>}/>
 
+         </Route>
+
+         {/* Teacher Route */}
       
       </Routes>
       <ToastContainer theme="dark"></ToastContainer>

@@ -1,6 +1,8 @@
 import app from "./app.js";
-import { connectDB } from "./config/db.js";
+import connectDB from "./config/db.js";
+// import {config} from "dotenv";
 
+// config()
 // database connection
 connectDB();
 
@@ -19,7 +21,6 @@ process.on("uncaughtException", (err) => {
     console.error(`uncaught Exception: ${err.message}`);
     process.exit(1);
 });
-
 
 
 

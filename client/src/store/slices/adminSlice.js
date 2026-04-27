@@ -11,7 +11,8 @@ export const createStudent = createAsyncThunk(
       const res = await axiosInstance.post(`/admin/create-student`, data);
       toast.success(res.data.message || "Student created Successfully.");
       return res.data.data.user;
-    } catch (error) {
+    } catch (error) { //backend error
+
       toast.error(error.response?.data?.message || "Failed to create Student");
       return thunkAPI.rejectWithValue(error.response?.data?.message);
     }
@@ -40,7 +41,7 @@ export const deleteStudent = createAsyncThunk(
     try {
       const res = await axiosInstance.delete(`/admin/delete-student/${id}`);
       toast.success(res.data.message || "Student Deleted Successfully.");
-      return id;
+      return id; //purpose to return id -- jisase hum ise createSlice me receive kr sake
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to Delete Student");
       return thunkAPI.rejectWithValue(error.response?.data?.message);
@@ -72,10 +73,11 @@ export const createTeacher = createAsyncThunk(
   async (data, thunkAPI) => {
     try {
       const res = await axiosInstance.post(`/admin/create-teacher`, data);
+      
       toast.success(res.data.message || "Teacher created Successfully.");
       return res.data.data.user;
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to create Teacher");
+      toast.error(error.response?.data?.message || "Failed to create teacher");
       return thunkAPI.rejectWithValue(error.response?.data?.message);
     }
   },
@@ -90,7 +92,7 @@ export const updateTeacher = createAsyncThunk(
       toast.success(res.data.message || "Teacher updated Successfully.");
       return res.data.data.user;
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to update Teacher");
+      toast.error(error.response?.data?.message || "Failed to update teacher");
       return thunkAPI.rejectWithValue(error.response?.data?.message);
     }
   },
@@ -105,7 +107,7 @@ export const deleteTeacher = createAsyncThunk(
       toast.success(res.data.message || "Teacher Deleted Successfully.");
       return id;
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to Delete Teacher");
+      toast.error(error.response?.data?.message || "Failed to Delete teacher");
       return thunkAPI.rejectWithValue(error.response?.data?.message);
     }
   },
@@ -114,8 +116,8 @@ export const deleteTeacher = createAsyncThunk(
 const adminSlice = createSlice({
   name: "admin",
   initialState: {
-    students: [],
-    teachers: [],
+    // students: [],
+    // teachers: [],
     projects: [],
     users: [],
     stats: null,
@@ -126,12 +128,12 @@ const adminSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(createStudent.fulfilled, (state, action) => {
-        if (state.users) state.users.unshift(action.payload);
+        if (state.users) state.users.unshift(action.payload); 
       })
-      .addCase(updateStudent.fulfilled, (state, action) => {
+      .addCase(updateStudent.fulfilled, (state, action) => { // state -- old data, action(event + data) -- updated data 
         if (state.users) {
           state.users = state.users.map((u) => {
-            u._id === action.payload._id ? { ...u, ...action.payload } : u;
+            u._id === action.payload._id ? { ...u, ...action.payload } : u; // action.payload --- updateStudent se return updated user data hai
           });
         }
       })

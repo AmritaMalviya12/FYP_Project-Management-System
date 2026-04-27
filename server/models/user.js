@@ -43,7 +43,7 @@ const userSchema = new mongoose.Schema(
       trim: true,
       default: null,
     },
-    experties: {
+    expertise: {
       type: [String],
       default: [],
     },
@@ -63,11 +63,11 @@ const userSchema = new mongoose.Schema(
       ref: "User",
       default: null,
     },
-    projects: {
+    project: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: "Project",
       default: null,
-    },
+    }],
   },
   {
     timestamps: true,
