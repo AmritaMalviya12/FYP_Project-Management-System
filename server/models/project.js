@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { type } from "os";
+// import { type } from "os";
 
 const projectSchema = new mongoose.Schema({
     student: {
@@ -27,9 +27,8 @@ const projectSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ["pending", "approved", "rejected", "completed"],
         default: "pending",
-        
+        enum: ["pending", "approved", "rejected", "completed"],
     },
     files: [
         {

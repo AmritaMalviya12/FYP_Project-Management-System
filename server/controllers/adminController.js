@@ -2,6 +2,7 @@ import { asyncHandler } from "../middlewares/asyncHandler.js";
 import ErrorHandler from "../middlewares/error.js";
 import { User } from "../models/user.js";
 import * as userServices from "../services/userServices.js";
+import * as projectServices from "../services/projectServices.js";
 
 // creating student by the Admin
 export const createStudent = asyncHandler(async (req, res, next) => {
@@ -133,9 +134,9 @@ export const deleteTeacher = asyncHandler(async (req, res, next) => {
 
 
 // getting all the users except the Admin one only
-export const getAllUsers = asyncHandler(async (req,res,next) => {
-    const {users} = await userServices.getAllUsers();
-     res.status(200).json({
+export const getAllUsers = asyncHandler(async (req, res, next) => {
+  const { users } = await userServices.getAllUsers();
+  res.status(200).json({
     success: true,
     message: "Users fetched Successfully",
     data: { users },
@@ -143,11 +144,18 @@ export const getAllUsers = asyncHandler(async (req,res,next) => {
 });
 
 
-// to assign the supervisor to the student's projects
-export const assignSupervisor = asyncHandler(async (req,res,next) => {});
-
 // getting all the projects lists
-export const getAllProject = asyncHandler(async(req,res,next)=> {});
+export const getAllProjects = asyncHandler(async (req, res, next) => {
+  const projects = await projectServices.getAllProjects();
+  res.json({
+    success: true,
+    message: "Project fetched successfully",
+    data: { projects },
+  })
+});
+
+// to assign the supervisor to the student's projects
+export const assignSupervisor = asyncHandler(async (req, res, next) => { });
 
 // to get all the dashboard statistics from the admin page
-export const getDashboardStats = asyncHandler(async(req,res,next) =>{});
+export const getDashboardStats = asyncHandler(async (req, res, next) => { });

@@ -63,11 +63,11 @@ const userSchema = new mongoose.Schema(
       ref: "User",
       default: null,
     },
-    project: [{
+    project: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Project",
       default: null,
-    }],
+    },
   },
   {
     timestamps: true,
@@ -97,18 +97,13 @@ userSchema.methods.comparePassword = async function (enteredPassword) {
 // ⚠️ Forgot password me JWT login token use nahi hota.
 // Yahan alag temporary reset token use hota hai.
 userSchema.methods.getResetPasswordToken = function () {
-  console.log("TOKEN FUNCTION START");
 
   const resetToken = crypto.randomBytes(20).toString("hex");
-  console.log(resetToken);
   this.resetPasswordToken = crypto
     .createHash("sha256")
     .update(resetToken)
     .digest("hex");
   this.resetPasswordExpire = Date.now() + 15 * 60 * 1000;
-
-  console.log("TOKEN FUNCTION END");
-  console.log(resetToken);
   return resetToken;
 };
 

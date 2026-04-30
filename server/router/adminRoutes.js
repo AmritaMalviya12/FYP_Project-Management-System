@@ -4,6 +4,7 @@ import {
   createTeacher,
   deleteStudent,
   deleteTeacher,
+  getAllProjects,
   getAllUsers,
   updateStudent,
   updateTeacher,
@@ -58,6 +59,13 @@ router.delete(
   isAuthenticated,
   isAuthorized("Admin"),
   deleteTeacher,
+);
+
+router.get(
+  "/projects",
+  isAuthenticated,
+  isAuthorized("Admin"),
+  getAllProjects,
 );
 
 // getting the lists of all the Users

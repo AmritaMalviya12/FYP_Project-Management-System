@@ -4,7 +4,7 @@ import { config } from "dotenv";
 import cookieParser from "cookie-parser";
 import authRouter from "./router/userRoutes.js";
 import adminRouter from "./router/adminRoutes.js"
-import studentRouter from "./router/studentRoutes.js"
+import studentRouters from "./router/studentRoutes.js"
 import { errorMiddleware } from "./middlewares/error.js";
 import { fileURLToPath } from "url"
 import path from "path"
@@ -38,7 +38,7 @@ app.use(express.urlencoded({ extended: true}));
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/admin", adminRouter);
-app.use("/api/v1/student", studentRouter);
+app.use("/api/v1/student", studentRouters);
 
 //for overall project error handling
 //do not  call the error middleware here as errorMiddleware() as it will execute the same right now . 
