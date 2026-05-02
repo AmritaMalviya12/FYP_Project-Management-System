@@ -48,7 +48,6 @@ const UploadFiles = () => {
   }
 
   const handleDownloadFile = async (file) => {
-    // if (!file?.projectId || !file.fileId) return;
     const res = await dispatch(downloadFile({projectId: project._id, fileId: file._id})).then(res => {
       const {blob} = res.payload;
       const url = window.URL.createObjectURL(new Blob([blob]));

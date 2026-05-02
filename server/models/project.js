@@ -1,6 +1,28 @@
 import mongoose from "mongoose";
-// import { type } from "os";
 
+const feedbackSchema = new mongoose.Schema({
+    supervisorId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+    },
+    type: {
+        type: String,
+        enum: ["positive", "negative", "general"],
+        default: "general",
+        required: true
+    },
+    title: {
+        type: String,
+        required: true,
+    },
+    message: {
+        type: String,
+        required: true,
+        maxlength: [1000, "Feedback message cannot be more than 1000 characters."]
+    },
+
+}, { timestamps: true })
 const projectSchema = new mongoose.Schema({
     student: {
         type: mongoose.Schema.Types.ObjectId,
@@ -12,13 +34,13 @@ const projectSchema = new mongoose.Schema({
         ref: "User",
         default: null
     },
-    
+
     title: {
         type: String,
         required: [true, "Project title is required"],
         trim: true,
         maxlength: [200, "Title cannot be more than 200 characters."]
-    },                            
+    },
     description: {
         type: String,
         required: [true, "Project description is required."],
@@ -50,33 +72,8 @@ const projectSchema = new mongoose.Schema({
             },
         }
     ],
-    feedback: [
-        {
-            supervisorId: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "User",
-                required: true,
-            },
-            type: {
-                type: String,
-                enum: ["positive", "negative", "general"],
-                default: "general",
-                required: true
-            },
-            title:{
-                type: String,
-                required: true,
-            },
-            message: {
-                type: String,
-                required: true,
-                maxlength: [1000, "Feedback message cannot be more than 1000 characters."]
-            },
-
-        },
-
-    ],
-    deadline:{
+    feedback: [feedbackSchema],
+    deadline: {
         type: Date,
     }
 
@@ -87,8 +84,8 @@ const projectSchema = new mongoose.Schema({
 );
 
 //INDEXING for better querry performance
-projectSchema.index({student: 1});
-projectSchema.index({supervisor: 1});
-projectSchema.index({status: 1});
+projectSchema.index({ student: 1 });
+projectSchema.index({ supervisor: 1 });
+projectSchema.index({ status: 1 });
 
-export const Project = mongoose.models.Project || mongoose.model("Project",projectSchema)
+export const Project = mongoose.models.Project || mongoose.model("Project", projectSchema)

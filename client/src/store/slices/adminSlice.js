@@ -73,7 +73,7 @@ export const createTeacher = createAsyncThunk(
   async (data, thunkAPI) => {
     try {
       const res = await axiosInstance.post(`/admin/create-teacher`, data);
-      
+
       toast.success(res.data.message || "Teacher created Successfully.");
       return res.data.data.user;
     } catch (error) {
@@ -127,6 +127,19 @@ export const getAllProjects = createAsyncThunk(
   },
 );
 
+export const getDashboardStats = createAsyncThunk(
+  "getDashboardStats",
+  async (_, thunkAPI) => {
+    try {
+      const res = await axiosInstance.get(`/admin/fetch-dashboard-stats`);
+      // toast.success(res.data.message || "Student Deleted Successfully.")
+      return res.data.data.stats;
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to Fetch admin dashboard stats");
+      return thunkAPI.rejectWithValue(error.response?.data?.message);
+    }
+  },
+);
 
 const adminSlice = createSlice({
   name: "admin",
@@ -143,7 +156,7 @@ const adminSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(createStudent.fulfilled, (state, action) => {
-        if (state.users) state.users.unshift(action.payload); 
+        if (state.users) state.users.unshift(action.payload);
       })
       .addCase(updateStudent.fulfilled, (state, action) => { // state -- old data, action(event + data) -- updated data 
         if (state.users) {
@@ -177,10 +190,13 @@ const adminSlice = createSlice({
       })
       .addCase(deleteTeacher.fulfilled, (state, action) => {
         if (state.users) {
-          state.users = state.users.filter((u) => {
-            u._id !== action.payload._id;
-          });
+          state.users = state.users.filter((u) =>
+            u._id !== action.payload
+          );
         }
+      })
+      .addCase(getDashboardStats.fulfilled, (state, action) => {
+        state.stats = action.payload
       })
   },
 });

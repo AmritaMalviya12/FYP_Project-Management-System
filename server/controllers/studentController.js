@@ -157,7 +157,7 @@ export const getDashboardStats = asyncHandler(async (req, res, next) => {
 
     const upcomingDeadlines = await Project.find({
         student: studentId,
-        deadline: { $get: now },
+        deadline: { $gte: now },
     }).select("title description").sort({ deadline: 1 }).limit(3).lean();
 
     const topNotifications = await Notification.find({ user: studentId }).populate("user", "name").sort({ createdAt: -1 }).limit(3).lean();
@@ -166,7 +166,7 @@ export const getDashboardStats = asyncHandler(async (req, res, next) => {
 
     const supervisorName = project?.supervisor?.name || null;
 
-    re.status(200).json({
+    res.status(200).json({
         success: true,
         message: "Dashnoard stats fetched successfully",
         data: {
@@ -182,14 +182,22 @@ export const getFeedback = asyncHandler(async (req, res, next) => {
 
     const project = await projectServices.getProjectById(projectId);
 
-    if (!project || project.student.toString() !== studentId.toString()){
+    if (!project || project.student._id.toString() !== studentId.toString()){
         return next(new ErrorHandler("Not authorized to view feedback for this project", 403));
     }
 
-    const sortedFeedback = project.feedback.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    const sortedFeedback = project.feedback.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).map((f) =>({
+        _id: f._id,
+        title: f.title,
+        message: f.message,
+        type: f.type,
+        createdAt: f.createdAt,
+        supervisorName: f.supervisorId?.name,
+        supervisorEmail: f.supervisorId?.email,
+    }))
 
     res.status(200).json({
-        success: ture,
+        success: true,
         data: {feedback: sortedFeedback},
     })
 });
@@ -210,4 +218,4 @@ export const downloadFile = asyncHandler(async (req, res, next) => {
     if(!file) return next(new ErrorHandler("File not found", 404));
 
     fileServices.streamDownload(file.fileUrl, res, file.originalName)
-})
+});
