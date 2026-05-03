@@ -31,11 +31,11 @@ export const getUserById = async (id) => {
 
 // getting all the users including both Teachers and Students that are created or made or entered by the Admin.
 export const getAllUsers = async () => {
-    // Here Admin is not included in the lists of all the users fetched as the Admin is using the function by the same.
-  const query = {role : {$ne: "Admin"}}; //ne -- not include
+  // Here Admin is not included in the lists of all the users fetched as the Admin is using the function by the same.
+  const query = { role: { $ne: "Admin" } }; //ne -- not include
   const users = await User.find(query).select(
     "-password -resetPasswordToken -resetPasswordExpire",
-  ).sort({createdAt: -1}); // latest user on top
+  ).sort({ createdAt: -1 }); // latest user on top
 
   //const total = await User.countDocuments(query);
 
@@ -52,3 +52,22 @@ export const deleteUser = async (id) => {
   }
   return await user.deleteOne();
 };
+
+export const assignSupervisorDirectly = async (studentId, supervisorId) => {
+  const student = await User.findOne({ _id: studentId, role: "Student" });
+  const supervisor = await User.findOne({ _id: supervisorId, role: "Teacher" });
+  if (!student || !supervisor) {
+    throw new Error("Student or Supervisor not found")
+  }
+  if (!supervisor.hasCapacity()) {
+    throw new Error("Student or Supervisor not found")
+  }
+  student.supervisor = supervisorId;
+  supervisor.assignedStudents.push(studentId);
+  await Promise.all([
+    student.save(),
+    supervisor.save()
+  ]);
+  return {student, supervisor};
+
+}

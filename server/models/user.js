@@ -92,6 +92,11 @@ userSchema.methods.comparePassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
+userSchema.methods.hasCapacity = function () {
+  if (this.role !== "Teacher") return false;
+  return this.assignedStudents.length < this.maxStudents;
+};
+
 // Sabse important baat pehle samjho:
 
 // ⚠️ Forgot password me JWT login token use nahi hota.
